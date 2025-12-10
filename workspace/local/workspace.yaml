@@ -1,0 +1,6 @@
+# Workspace entry for dag_hello_world
+# This gets appended to ~/workspace/services/dagster/workspace.yaml
+
+- python_package:
+    package_name: dag_hello_world_dagster
+    working_directory: /workspace/projects/dag-hello-world/src

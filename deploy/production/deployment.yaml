@@ -1,0 +1,54 @@
+# Deployment configuration for production
+# Strategy: Git repository checkout
+
+deployment:
+  name: production
+  client: Test Client
+  environment: production
+
+  # Deployment Strategy
+  strategy: git
+
+  # Remote Connection
+  remote:
+    host: <REMOTE_HOST>
+    user: <REMOTE_USER>
+    base_path: /opt/dagster
+    module_path: /opt/dagster/modules/dag_hello_world
+
+  # Git Strategy Configuration
+  git:
+    repository: git@github.com:myorg/dag-hello-world.git
+    branch: main
+
+    # Commands to run after git pull
+    post_checkout: |
+      cd /opt/dagster
+      docker-compose build
+      docker-compose up -d --no-deps dagster_webserver dagster_daemon
+
+  # Module Configuration
+  module:
+    package_name: dag_hello_world_dagster
+    working_directory: /workspace/modules/dag_hello_world/src
+
+  # Database Configuration
+  database:
+    type: postgresql
+    host: dag_hello_world_postgres
+    port: 5440
+    name: dag_hello_world_db
+    user: dag_hello_world_user
+
+  # Network Configuration
+  network:
+    name: workspace-net
+    external: true
+
+  # Remote Paths
+  paths:
+    workspace_yaml: /opt/dagster/workspace.yaml
+    dockerfile: /opt/dagster/Dockerfile
+    docker_compose: /opt/dagster/docker-compose.yml
+    data: /opt/dagster/data
+    auth: /opt/dagster/auth

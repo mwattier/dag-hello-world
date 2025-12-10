@@ -1,0 +1,23 @@
+# Database service for dag_hello_world
+# This gets merged into ~/workspace/services/dagster/docker-compose.yml
+
+services:
+  dag_hello_world_postgres:
+    image: postgres:${POSTGRES_VERSION:-15}
+    container_name: dag_hello_world_postgres
+    environment:
+      POSTGRES_USER: ${DAG_HELLO_WORLD_DB_USER:-dag_hello_world_user}
+      POSTGRES_PASSWORD: ${DAG_HELLO_WORLD_DB_PASSWORD:-dag_hello_world_password}
+      POSTGRES_DB: ${DAG_HELLO_WORLD_DB_NAME:-dag_hello_world_db}
+    volumes:
+      - ${DATA_PATH:-../../data}/postgres/dag_hello_world:/var/lib/postgresql/data
+    ports:
+      - "${DAG_HELLO_WORLD_DB_PORT:-5440}:5432"
+    networks:
+      - ${NETWORK_NAME:-workspace-net}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DAG_HELLO_WORLD_DB_USER:-dag_hello_world_user}"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

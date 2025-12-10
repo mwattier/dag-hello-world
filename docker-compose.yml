@@ -1,0 +1,26 @@
+# PostgreSQL database for dag_hello_world
+# For standalone local testing (optional)
+
+version: '3.8'
+
+services:
+  dag_hello_world_postgres:
+    image: postgres:${POSTGRES_VERSION:-15}
+    container_name: dag_hello_world_postgres_standalone
+    environment:
+      POSTGRES_USER: ${DAG_HELLO_WORLD_DB_USER:-dag_hello_world_user}
+      POSTGRES_PASSWORD: ${DAG_HELLO_WORLD_DB_PASSWORD:-dag_hello_world_password}
+      POSTGRES_DB: ${DAG_HELLO_WORLD_DB_NAME:-dag_hello_world_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DAG_HELLO_WORLD_DB_PORT:-5440}:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DAG_HELLO_WORLD_DB_USER:-dag_hello_world_user}"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  postgres_data:
